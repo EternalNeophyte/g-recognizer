@@ -1,15 +1,33 @@
-import org.opencv.core.*;
+import edu.psuti.alexandrov.grecognizer.*;
+import nu.pattern.OpenCV;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class Runner {
 
     public static void main(String[] args) {
-        runColorPercentageTask();
+        try {
+            runGRecognizer();
+        } catch (InterruptedException | ExecutionException | ShedulerNotReadyException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void runColorPercentageTask() {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        ImageManager manager = new ImageManager(50, Runtime.getRuntime().availableProcessors(),
-                ".\\src\\main\\java\\assets\\cat.png");
-        manager.printResults();
+    private static void runGRecognizer() throws ExecutionException, InterruptedException {
+        OpenCV.loadLocally();
+        List<Color> colors = ImageProcessor
+                .fromPath(".\\src\\main\\resources\\assets\\cat.png")
+                .colorsList();
+        ResultTable resultTable = AnalysisSheduler
+                .builder()
+                .serviceByDefault()
+                .task(() -> ColorAnalyzer.of(colors).analyze())
+                .build()
+                .call()
+                .get();
+        resultTable.printResults();
     }
 }
