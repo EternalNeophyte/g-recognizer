@@ -21,13 +21,13 @@ public class Runner {
         List<Color> colors = ImageProcessor
                 .fromPath(".\\src\\main\\resources\\assets\\cat.png")
                 .colorsList();
-        ResultTable resultTable = AnalysisSheduler
+        ResultsTable resultsTable = AnalysisSheduler
                 .builder()
                 .serviceByDefault()
                 .task(() -> ColorAnalyzer.of(colors).analyze())
                 .build()
                 .call()
                 .get();
-        resultTable.printResults();
+        resultsTable.printResults();
     }
 }

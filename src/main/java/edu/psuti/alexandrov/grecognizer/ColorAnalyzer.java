@@ -30,15 +30,15 @@ public class ColorAnalyzer {
         this.colors = colors;
     }
 
-    public ResultTable analyze() {
+    public ResultsTable analyze() {
         return analyze(DEFAULT_COLOR_RESTRICTION, DEFAULT_MATH_CONTEXT);
     }
 
-    public ResultTable analyze(int colorsToCount) {
+    public ResultsTable analyze(int colorsToCount) {
         return analyze(colorsToCount, DEFAULT_MATH_CONTEXT);
     }
 
-    public ResultTable analyze(int colorsToCount, MathContext mathContext) {
+    public ResultsTable analyze(int colorsToCount, MathContext mathContext) {
         final BigDecimal percentDivisor = BigDecimal
                 .valueOf(colors.size())
                 .divide(BigDecimal.valueOf(100), mathContext);
@@ -55,6 +55,6 @@ public class ColorAnalyzer {
                                 .valueOf(list.size())
                                 .divide(percentDivisor, mathContext)
                 ));
-        return ResultTable.of(results);
+        return ResultsTable.of(results);
     }
 }

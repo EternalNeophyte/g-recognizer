@@ -2,16 +2,16 @@ package edu.psuti.alexandrov.grecognizer;
 
 import java.util.Map;
 
-public class ResultTable {
+public class ResultsTable {
 
     private Map<?, ?> results;
 
-    private ResultTable(Map<?, ?> results) {
+    private ResultsTable(Map<?, ?> results) {
         this.results = results;
     }
 
-    public static ResultTable of(Map<?, ?> results) {
-        return new ResultTable(results);
+    public static ResultsTable of(Map<?, ?> results) {
+        return new ResultsTable(results);
     }
 
     public Map<?, ?> getResults() {

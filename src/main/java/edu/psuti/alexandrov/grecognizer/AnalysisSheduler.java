@@ -8,10 +8,10 @@ import java.util.concurrent.Future;
 
 public class AnalysisSheduler {
 
-    private Callable<ResultTable> task;
+    private Callable<ResultsTable> task;
     private ExecutorService service;
 
-    public Callable<ResultTable> getTask() {
+    public Callable<ResultsTable> getTask() {
         return task;
     }
 
@@ -31,7 +31,7 @@ public class AnalysisSheduler {
         return Objects.isNull(task);
     }
 
-    public Future<ResultTable> call() {
+    public Future<ResultsTable> call() {
         if(shedulerNotReady()) {
             throw new ShedulerNotReadyException();
         }
@@ -44,7 +44,7 @@ public class AnalysisSheduler {
 
     public class Builder {
 
-        public Builder task(Callable<ResultTable> task) {
+        public Builder task(Callable<ResultsTable> task) {
             AnalysisSheduler.this.task = task;
             return this;
         }
