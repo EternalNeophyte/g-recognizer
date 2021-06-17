@@ -1,25 +1,24 @@
 package edu.psuti.alexandrov.grecognizer;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 public class ResultTable {
 
-    private Map<Color, BigDecimal> results;
+    private Map<?, ?> results;
 
-    private ResultTable(Map<Color, BigDecimal> results) {
+    private ResultTable(Map<?, ?> results) {
         this.results = results;
     }
 
-    public static ResultTable of(Map<Color, BigDecimal> results) {
+    public static ResultTable of(Map<?, ?> results) {
         return new ResultTable(results);
     }
 
-    public Map<Color, BigDecimal> getResults() {
+    public Map<?, ?> getResults() {
         return results;
     }
 
-    public void setResults(Map<Color, BigDecimal> results) {
+    public void setResults(Map<?, ?> results) {
         this.results = results;
     }
 
