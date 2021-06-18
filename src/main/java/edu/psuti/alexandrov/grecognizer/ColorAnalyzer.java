@@ -2,9 +2,7 @@ package edu.psuti.alexandrov.grecognizer;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -31,19 +29,18 @@ public class ColorAnalyzer {
         this.colors = colors;
     }
 
-    public ResultsTable analyze() {
+    public ResultsTable<?, ?> analyze() {
         return analyze(DEFAULT_COLOR_RESTRICTION, DEFAULT_MATH_CONTEXT);
     }
 
-    public ResultsTable analyze(AtomicInteger colorsToCount) {
+    public ResultsTable<?, ?> analyze(AtomicInteger colorsToCount) {
         return analyze(colorsToCount, DEFAULT_MATH_CONTEXT);
     }
 
-    public ResultsTable analyze(AtomicInteger colorsToCount, MathContext mathContext) {
-        final BigDecimal percentDivisor = BigDecimal
-                .valueOf(colors.size())
+    public ResultsTable<?, ?> analyze(AtomicInteger colorsToCount, MathContext mathContext) {
+        final BigDecimal percentDivisor = BigDecimal.valueOf(colors.size())
                 .divide(BigDecimal.valueOf(100), mathContext);
-        Map<Color, BigDecimal> results = colors
+        Map<Color, VisualMetrics> results = colors
                 .parallelStream()
                 .collect(Collectors.groupingByConcurrent(Color::getRgbAsString))
                 .values()
@@ -52,10 +49,24 @@ public class ColorAnalyzer {
                 .limit(colorsToCount.get())
                 .collect(Collectors.toConcurrentMap(
                         listToKey -> listToKey.get(0),
-                        listToValue -> BigDecimal
-                                .valueOf(listToValue.size())
-                                .divide(percentDivisor, mathContext)
+                        listToValue -> VisualMetrics.builder()
+                                .percentage(BigDecimal.valueOf(listToValue.size())
+                                        .divide(percentDivisor, mathContext))
+                                .pixelCountFromInt(listToValue.size())
+                                .build()
                 ));
-        return ResultsTable.of(results);
+
+        return ResultsTable.<Color, VisualMetrics>with()
+                .header("Results of color analysis")
+                .column("Color as RGB")
+                .column("Percentage, %")
+                .column("Pixels count")
+                .columnWidth(20)
+                .columnFormatter((c, v) -> new Object[] {
+                        c.getRgbAsString(),
+                        v.getPercentage(),
+                        v.getPixelCount()
+                })
+                .including(results);
     }
 }

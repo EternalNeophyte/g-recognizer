@@ -1,33 +1,90 @@
 package edu.psuti.alexandrov.grecognizer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
-public class ResultsTable {
+public class ResultsTable<K, V> {
 
-    private Map<?, ?> results;
+    private String header;
+    private List<String> columns;
+    private BiFunction<K, V, Object[]> columnFormatter;
+    private Map<K, V> results;
+    private int columnWidth;
 
-    private ResultsTable(Map<?, ?> results) {
+    public ResultsTable() {
+        this.columns = new ArrayList<>();
+    }
+
+    public static <K, V> ResultsTable<K, V> with() {
+        return new ResultsTable<>();
+    }
+
+    public ResultsTable<K, V> header(String header) {
+        this.header = header;
+        return this;
+    }
+
+    public ResultsTable<K, V> column(String column) {
+        columns.add(column);
+        return this;
+    }
+
+    public ResultsTable<K, V> columnWidth(int columnWidth) {
+        this.columnWidth = columnWidth;
+        return this;
+    }
+
+    public ResultsTable<K, V> columnFormatter(BiFunction<K, V, Object[]> columnFormatter) {
+        this.columnFormatter = columnFormatter;
+        return this;
+    }
+
+    public ResultsTable<K, V> including(Map<K, V> results) {
         this.results = results;
+        return this;
     }
 
-    public static ResultsTable of(Map<?, ?> results) {
-        return new ResultsTable(results);
+    public String getHeader() {
+        return header;
     }
 
-    public Map<?, ?> getResults() {
+    public int getColumnWidth() {
+        return columnWidth;
+    }
+
+    public List<String> getColumns() {
+        return columns;
+    }
+
+    public Map<K, V> getResults() {
         return results;
     }
 
-    public void setResults(Map<?, ?> results) {
-        this.results = results;
+    public void printAll() {
+        printHeader();
+        results.forEach((k, v) -> printRow(columnFormatter.apply(k, v)));
     }
 
-    private String toRow(String inLeftColumn, String inRightColumn) {
-        return String.format("|\t%-20s|\t%-50s|", inLeftColumn, inRightColumn);
+    public void printHeader() {
+        System.out.printf("|\t%" + columnWidth * columns.size() + "s |%n", header);
+        printRow(columns.toArray());
     }
 
-    public void printResults() {
-        System.out.println(toRow("Percentage, %", "Color as RGB"));
-        results.forEach((k, v) -> System.out.println(toRow(v.toString(), k.toString())));
+    private void printRow(Object... columns) {
+        System.out.println(formatToRow(columns));
+    }
+
+    private String formatToRow(Object... data) {
+        return String.format(buildPattern(), data);
+    }
+
+    private String buildPattern() {
+        StringBuilder sb = new StringBuilder("|");
+        columns.forEach(c -> sb.append("\t%")
+                .append(columnWidth)
+                .append("s |"));
+        return sb.toString();
     }
 }
