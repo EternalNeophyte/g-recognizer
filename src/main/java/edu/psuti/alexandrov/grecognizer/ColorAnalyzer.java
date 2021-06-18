@@ -55,13 +55,12 @@ public class ColorAnalyzer {
                                 .pixelCountFromInt(listToValue.size())
                                 .build()
                 ));
-
         return ResultsTable.<Color, VisualMetrics>with()
                 .header("Results of color analysis")
                 .column("Color as RGB")
                 .column("Percentage, %")
                 .column("Pixels count")
-                .columnWidth(20)
+                .columnWidth(30)
                 .columnFormatter((c, v) -> new Object[] {
                         c.getRgbAsString(),
                         v.getPercentage(),

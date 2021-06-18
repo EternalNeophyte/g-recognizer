@@ -9,9 +9,9 @@ public class ResultsTable<K, V> {
 
     private String header;
     private List<String> columns;
+    private int columnWidth;
     private BiFunction<K, V, Object[]> columnFormatter;
     private Map<K, V> results;
-    private int columnWidth;
 
     public ResultsTable() {
         this.columns = new ArrayList<>();
@@ -68,7 +68,7 @@ public class ResultsTable<K, V> {
     }
 
     public void printHeader() {
-        System.out.printf("|\t%" + columnWidth * columns.size() + "s |%n", header);
+        System.out.printf("[\t%" + columnWidth + "s ]%n", header);
         printRow(columns.toArray());
     }
 
@@ -76,8 +76,8 @@ public class ResultsTable<K, V> {
         System.out.println(formatToRow(columns));
     }
 
-    private String formatToRow(Object... data) {
-        return String.format(buildPattern(), data);
+    private String formatToRow(Object... columns) {
+        return String.format(buildPattern(), columns);
     }
 
     private String buildPattern() {
