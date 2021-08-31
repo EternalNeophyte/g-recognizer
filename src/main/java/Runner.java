@@ -3,6 +3,7 @@ import nu.pattern.OpenCV;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinTask;
 
 public class Runner {
 
@@ -24,7 +25,7 @@ public class Runner {
         ResultsTable<?, ?> resultsTable = AnalysisSheduler
                 .builder()
                 .serviceByDefault()
-                .task(() -> ColorAnalyzer.of(colors).analyze())
+                .task(ForkJoinTask.adapt(() -> ColorAnalyzer.of(colors).analyze()))
                 .build()
                 .call()
                 .get();

@@ -1,22 +1,19 @@
 package edu.psuti.alexandrov.grecognizer;
 
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class AnalysisSheduler {
 
-    private Callable<ResultsTable<?, ?>> task;
-    private ExecutorService service;
+    private ForkJoinTask<ResultsTable<?, ?>> task;
+    private ForkJoinPool pool;
 
-    public Callable<ResultsTable<?, ?>> getTask() {
+    public ForkJoinTask<ResultsTable<?, ?>> getTask() {
         return task;
     }
 
-    public ExecutorService getService() {
-        return service;
+    public ForkJoinPool getPool() {
+        return pool;
     }
 
     private boolean shedulerNotReady() {
@@ -24,18 +21,18 @@ public class AnalysisSheduler {
     }
 
     private boolean serviceNotDefined() {
-        return Objects.isNull(service);
+        return Objects.isNull(pool);
     }
 
     private boolean taskNotDefined() {
         return Objects.isNull(task);
     }
 
-    public Future<ResultsTable<?, ?>> call() {
+    public ForkJoinTask<ResultsTable<?, ?>> call() {
         if(shedulerNotReady()) {
             throw new ShedulerNotReadyException();
         }
-        return service.submit(task);
+        return pool.submit(task);
     }
 
     public static Builder builder() {
@@ -44,18 +41,18 @@ public class AnalysisSheduler {
 
     public class Builder {
 
-        public Builder task(Callable<ResultsTable<?, ?>> task) {
+        public Builder task(ForkJoinTask<ResultsTable<?, ?>> task) {
             AnalysisSheduler.this.task = task;
             return this;
         }
 
-        public Builder service(ExecutorService service) {
-            AnalysisSheduler.this.service = service;
+        public Builder service(ForkJoinPool pool) {
+            AnalysisSheduler.this.pool = pool;
             return this;
         }
 
         public Builder serviceByDefault() {
-            return service(Executors.newCachedThreadPool());
+            return service(ForkJoinPool.commonPool());
         }
 
         public AnalysisSheduler build() {
